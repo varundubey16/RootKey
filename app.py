@@ -12,24 +12,25 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 
-#v4 new additon is io cuz crash of matplot png generation
+#v4 new additon crash of matplot png generation
 import io
 from sklearn.linear_model import LogisticRegression
 
 
 
-
+#dictset = set(open('dict.txt', encoding='utf-8').read().split())
 app = Flask(__name__)
 #rockucmpilied loadin pandas
 #
 df = pd.read_csv('pasexamples.txt')
+#df = df.sample(min(len(df), 200000), random_state=42)
 #feature engineering
-CHARS = "!@#$%^&*_-+=<>?/"
+chars = "!@#$%^&*_-+=<>?/"
 df['len'] = df['password'].astype(str).apply(len)
 df['low'] = df['password'].astype(str).apply(lambda p: 1 if any(c.islower() for c in p) else 0)
 df['up'] = df['password'].astype(str).apply(lambda p: 1 if any(c.isupper() for c in p) else 0)
 df['digi'] = df['password'].astype(str).apply(lambda p: 1 if any(c.isdigit() for c in p) else 0)
-df['specl'] = df['password'].astype(str).apply(lambda p: 1 if any(c in CHARS for c in p) else 0)
+df['specl'] = df['password'].astype(str).apply(lambda p: 1 if any(c in chars for c in p) else 0)
 #
 ab = df[['len', 'low', 'up', 'digi', 'specl']]
 cd = df['strength']
@@ -65,11 +66,11 @@ def getentro(pword):
         if c.islower(): low = True
         if c.isupper(): upp = True
         if c.isdigit(): num = True
-        if c in CHARS: spc = True
+        if c in chars: spc = True
     if low: pool += 26
     if upp: pool += 26
     if num: pool += 10
-    if spc: pool += len(CHARS)
+    if spc: pool += len(chars)
     if pool == 0: 
         return 0
     return round(len(pword) * math.log2(pool), 2)
@@ -80,8 +81,6 @@ def home():
 @app.route('/chartie')
 #plotter test for user showing def chartie():
 def chartie():
-
-
     '''if os.path.exists('livechart.png'):
         return send_file('livechart.png', mimetype='image/png')
     return 'none', 404
@@ -116,7 +115,7 @@ def checkpas():
     lower = 1 if any(c.islower() for c in p) else 0
     upper = 1 if any(c.isupper() for c in p) else 0
     digit = 1 if any(c.isdigit() for c in p) else 0
-    special = 1 if any(c in CHARS for c in p) else 0  
+    special = 1 if any(c in chars for c in p) else 0  
     #oldprediction
     #res = vraunzclassify.predict([[length, lower, upper, digit, special]])[0]
     # now sklearn warning gone (12 may 2026)
@@ -156,10 +155,10 @@ def aisggsts():
     tips = []
     if len(pwd) < 8:
         tips.append("Make it longer! (at least 8 chars),")
-    if not any(c.islower() for c in pwd): tips.append("Add lowercase,")
-    if not any(c.isupper() for c in pwd): tips.append("Add uppercase,")
-    if not any(c.isdigit() for c in pwd): tips.append("Add numbers,")
-    has_spc = any(c in CHARS for c in pwd)
+    if not any(c.islower() for c in pwd): tips.append("add lowercase,")
+    if not any(c.isupper() for c in pwd): tips.append("add uppercase,")
+    if not any(c.isdigit() for c in pwd): tips.append("add numbers,")
+    has_spc = any(c in chars for c in pwd)
     if not has_spc: 
         tips.append("Add special chars")
     if not tips:
@@ -172,12 +171,11 @@ def pasgen():
     nums = "0123456789"
     syms = "!@#$%^&*_-"
     arr = [random.choice(abc), random.choice(caps), random.choice(nums), random.choice(syms)]
-    all_chars = abc + caps + nums + syms
+    allchars = abc + caps + nums + syms
     for _ in range(10):
-        arr.append(random.choice(all_chars))
+        arr.append(random.choice(allchars))
     random.shuffle(arr)
     return jsonify({"password": "".join(arr)})
 if __name__ == "__main__":
     app.run(debug=True)#
    #app.run(debug=False) 
-
