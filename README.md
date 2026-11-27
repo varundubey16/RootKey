@@ -12,3 +12,5 @@ flask proj with ML to classify password strength, generate secure passwords, pro
 - **flask**
 
 **Note**- app lightweight and runs completely on the CPU but slow on low end computers, reason it uses actual rock you leaked passwords (combined) extremely large dataset and hence is computationally intensive/expensive. It trains a DT classifier when the application starts
+
+ADDED Vercel deployment - bug 27/11/26-js rendering, fixed.
